@@ -8,7 +8,6 @@ const postRoutes = require('./routes/post.js');
 
 const path = require('path');
 
-
 /************************************/
 /** création application Express ***/
 const app = express();
@@ -23,12 +22,10 @@ app.use((req, res, next) => {
   next();
 });
 
-
 /************************************/
 // Parser les corps des requête + forcer parse d'objets inclus dans d'autres objets //
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
 
 /************************************/
 /************* Route ***************/

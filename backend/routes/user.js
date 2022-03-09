@@ -7,7 +7,6 @@ const auth = require('../middleware/auth');
 
 /**********************************/
 /*** Routage de la ressource User */
-
 router.post("/signup", userCtrl.signup);
 router.post("/login", userCtrl.login);
 router.get('/me', auth, userCtrl.userProfil);

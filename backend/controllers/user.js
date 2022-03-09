@@ -6,11 +6,10 @@ let models = require('../models');
 let utils = require('../utils/jwtUtils');
 let verifInput = require('../utils/verifInput')
 
-
 /**********************************/
 /*** Routage de la ressource User */
 
-//Création d'un user //
+// Création d'un user //
 exports.signup = (req, res) => {
     // Valider les paramètres de la requète //
     let email = req.body.email;
@@ -97,7 +96,7 @@ exports.login = (req, res) => {
 exports.userProfil = (req, res) => {
     let id = utils.getUserId(req.headers.authorization)
     models.User.findOne({
-        attributes: ['id', 'email', 'username', 'isAdmin'],
+        attributes: ['id', 'email', 'username','isAdmin'],
         where: { id: id }
     })
         .then(user => res.status(200).json(user))
