@@ -1,14 +1,17 @@
-//Import
+/************************************/
+/*** Import des modules nécessaires */
 let models = require('../models');
 let utils = require('../utils/jwtUtils');
 const fs = require('fs');
 
+/**************************************/
+/*** Routage de la ressource Post */
 
-//Création d'un message
+// Création d'un message // 
 exports.create = (req, res) => {
-    //Declaration de l'url de l'image
+    // Declaration de l'url de l'image //
     let attachmentURL
-    //identifier qui créé le message
+    // Identifier qui créé le message //
     let id = utils.getUserId(req.headers.authorization)
     models.User.findOne({
         attributes: ['id', 'email', 'username'],
@@ -16,7 +19,7 @@ exports.create = (req, res) => {
     })
         .then(user => {
             if (user !== null) {
-                //Récupération du corps du post
+                //Récupération du corps du post //
                 let content = req.body.content;
                 if (req.file != undefined) {
                     attachmentURL = `${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
@@ -27,13 +30,13 @@ exports.create = (req, res) => {
                 if ((content == 'null' && attachmentURL == null)) {
                     res.status(400).json({ error: 'Rien à publier' })
                 } else {
-                    models.Message.create({
+                    models.Post.create({
                         content: content,
                         attachement: attachmentURL,
                         UserId: user.id
                     })
-                        .then((newMessage) => {
-                            res.status(201).json(newMessage)
+                        .then((newPost) => {
+                            res.status(201).json(newPost)
                         })
                         .catch((err) => {
                             res.status(500).json(err)
@@ -46,18 +49,18 @@ exports.create = (req, res) => {
         .catch(error => res.status(500).json(error));
 }
 
-//Afficher les posts sur le mur
+// Afficher les posts sur le mur //
 exports.listMsg = (req, res) => {
-    models.Message.findAll({
+    models.Post.findAll({
         include: [{
             model: models.User,
             attributes: ['username']
         }],
         order: [['createdAt', 'DESC']]
     })
-        .then(messages => {
-            if (messages.length > null) {
-                res.status(200).json(messages)
+        .then(posts => {
+            if (posts.length > null) {
+                res.status(200).json(posts)
             } else {
                 res.status(404).json({ error: 'Pas de post à afficher' })
             }
@@ -65,42 +68,42 @@ exports.listMsg = (req, res) => {
         .catch(err => res.status(500).json(err))
 }
 
-//Suppression d'un post
+// Suppression d'un post //
 exports.delete = (req, res) => {
-    //req => userId, postId
+    // req => userId, postId, user.isAdmin //
     let userOrder = req.body.userIdOrder;
-    //identification du demandeur
+    // identification du demandeur //
     let id = utils.getUserId(req.headers.authorization)
     models.User.findOne({
-        attributes: ['id', 'email', 'username'],
+        attributes: ['id', 'email', 'username', 'isAdmin'],
         where: { id: id }
     })
         .then(user => {
-            //Vérification que le demandeur est le poster
-            if (user && (user.id == userOrder)) {
-                console.log('Suppression du post id :', req.body.messageId);
-                models.Message
+            // Vérification que le demandeur est soit l'admin soit le poster //
+            if (user && (user.isAdmin == true || user.id == userOrder)) {
+                console.log('Suppression du post id :', req.body.postId);
+                models.Post
                     .findOne({
-                        where: { id: req.body.messageId }
+                        where: { id: req.body.postId }
                     })
-                    .then((messageFind) => {
+                    .then((postFind) => {
 
-                        if (messageFind.attachement) {
-                            const filename = messageFind.attachement.split('/images/')[1];
-                            console.log("teseeeest", filename);
+                        if (postFind.attachement) {
+                            const filename = postFind.attachement.split('/images/')[1];
+                            console.log("teste", filename);
                             fs.unlink(`images/${filename}`, () => {
-                                models.Message
+                                models.Post
                                     .destroy({
-                                        where: { id: messageFind.id }
+                                        where: { id: postFind.id }
                                     })
                                     .then(() => res.end())
                                     .catch(err => res.status(500).json(err))
                             })
                         }
                         else {
-                            models.Message
+                            models.Post
                                 .destroy({
-                                    where: { id: messageFind.id }
+                                    where: { id: postFind.id }
                                 })
                                 .then(() => res.end())
                                 .catch(err => res.status(500).json(err))
@@ -112,27 +115,27 @@ exports.delete = (req, res) => {
         .catch(error => res.status(500).json(error));
 };
 
-//Modification d'un post
+// Modification d'un post //
 exports.update = (req, res) => {
-    //récupération de l'id du demandeur pour vérification
+    // récupération de l'id du demandeur pour vérification //
     let userOrder = req.body.userIdOrder;
-    //identification du demandeur
+    // Identification du demandeur //
     let id = utils.getUserId(req.headers.authorization);
     models.User.findOne({
-        attributes: ['id', 'email', 'username'],
+        attributes: ['id', 'email', 'username', 'isAdmin'],
         where: { id: id }
     })
         .then(user => {
-            //Vérification que le demandeur est le poster
-            if (user && (user.id == userOrder)) {
-                console.log('Modif ok pour le post :', req.body.messageId);
-                models.Message
+            // Vérification que le demandeur est soit l'admin soit le poster //
+            if (user && (user.isAdmin == true || user.id == userOrder)) {
+                console.log('Modif ok pour le post :', req.body.postId);
+                models.Post
                     .update(
                         {
                             content: req.body.newText,
                             attachement: req.body.newImg
                         },
-                        { where: { id: req.body.messageId } }
+                        { where: { id: req.body.postId } }
                     )
                     .then(() => res.end())
                     .catch(err => res.status(500).json(err))

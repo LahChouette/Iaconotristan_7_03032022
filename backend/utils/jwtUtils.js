@@ -1,6 +1,7 @@
-/*Gestion de jwt*/
+/* Gestion de jwt */
 
-//import
+/************************************/
+/*** Import des modules nécessaires */
 let jwt = require('jsonwebtoken')
 
 module.exports = {
@@ -8,6 +9,7 @@ module.exports = {
   generateToken: function (user) {
     return jwt.sign({
       userId: user.id,
+      isAdmin: user.isAdmin
     },
       this.tokenSign,
       {

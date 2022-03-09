@@ -1,13 +1,18 @@
-//Import
+/************************************/
+/*** Import des modules nécessaires */
 let bcrypt = require('bcrypt');
 let jwt = require('jsonwebtoken');
 let models = require('../models');
 let utils = require('../utils/jwtUtils');
 let verifInput = require('../utils/verifInput')
 
-//Création d'un user
+
+/**********************************/
+/*** Routage de la ressource User */
+
+//Création d'un user //
 exports.signup = (req, res) => {
-    // Valider les paramètres de la requète
+    // Valider les paramètres de la requète //
     let email = req.body.email;
     let username = req.body.username;
     let password = req.body.password;
@@ -16,7 +21,7 @@ exports.signup = (req, res) => {
         res.status(400).json({ error: 'il manque un paramètre' })
     }
 
-    //TO DO => Vérification des saisies user
+    // TO DO => Vérification des saisies user //
     let emailOk = verifInput.validEmail(email);
     console.log(emailOk)
     let mdpOK = verifInput.validPassword(password);
@@ -24,8 +29,8 @@ exports.signup = (req, res) => {
     let usernameOk = verifInput.validUsername(username);
     console.log(usernameOk)
     if (emailOk == true && mdpOK == true && usernameOk == true) {
-        //Vérification si user n'existe pas déjà
-        //TO DO => Vérifier l'username et l'email
+        // Vérification si user n'existe pas déjà //
+        // TO DO => Vérifier l'username et l'email //
         models.User.findOne({
             attributes: ['email'],
             where: { email: email }
@@ -33,11 +38,12 @@ exports.signup = (req, res) => {
             .then(user => {
                 if (!user) {
                     bcrypt.hash(password, 10, function (err, bcryptPassword) {
-                        // Création de l'user
+                        // Création de l'user //
                         const newUser = models.User.create({
                             email: email,
                             username: username,
                             password: bcryptPassword,
+                            isAdmin: false
                         })
                             .then(newUser => { res.status(201).json({ 'id': newUser.id }) })
                             .catch(err => {
@@ -55,15 +61,15 @@ exports.signup = (req, res) => {
     }
 };
 
-//Login d'un user
+// Login d'un user //
 exports.login = (req, res) => {
-    //Récupération et validation des paramètres
+    // Récupération et validation des paramètres //
     let username = req.body.username;
     let password = req.body.password;
     if (username == null || password == null) {
         res.status(400).json({ error: 'Il manque un paramètre' })
     }
-    //Vérification si user existe
+    // Vérification si user existe //
     models.User.findOne({
         where: { username: username }
     })
@@ -74,6 +80,7 @@ exports.login = (req, res) => {
                         res.status(200).json({
                             userId: user.id,
                             token: utils.generateToken(user),
+                            isAdmin: user.isAdmin
                         })
                     } else {
                         res.status(403).json({ error: 'invalid password' });
@@ -86,35 +93,35 @@ exports.login = (req, res) => {
         .catch(err => { res.status(500).json({ err }) })
 };
 
-//Profil d'un user
+// Profil d'un user //
 exports.userProfil = (req, res) => {
     let id = utils.getUserId(req.headers.authorization)
     models.User.findOne({
-        attributes: ['id', 'email', 'username'],
+        attributes: ['id', 'email', 'username', 'isAdmin'],
         where: { id: id }
     })
         .then(user => res.status(200).json(user))
         .catch(error => res.status(500).json(error))
 };
 
-//modification d'un profil
+// Modification d'un profil //
 exports.changePwd = (req, res) => {
-    //TO DO:
-    //Récupère l'id de l'user et le nouveau password
+    // TO DO:
+    // Récupère l'id de l'user et le nouveau password //
     let userId = utils.getUserId(req.headers.authorization);
     const newPassword = req.body.newPassword;
     console.log(newPassword)
-    //Vérification regex du nouveau mot de passe
+    // Vérification regex du nouveau mot de passe //
     console.log('admin', verifInput.validPassword(newPassword))
     if (verifInput.validPassword(newPassword)) {
-        //Vérifie qu'il est différent de l'ancien
+        // Vérifie qu'il est différent de l'ancien //
         models.User.findOne({
             where: { id: userId }
         })
             .then(user => {
                 console.log('user trouvé', user)
                 bcrypt.compare(newPassword, user.password, (errComparePassword, resComparePassword) => {
-                    //bcrypt renvoit resComparePassword si les mdp sont identiques donc aucun changement
+                    // bcrypt renvoit resComparePassword si les mdp sont identiques donc aucun changement //
                     if (resComparePassword) {
                         res.status(406).json({ error: 'Vous avez entré le même mot de passe' })
                     } else {
@@ -135,25 +142,25 @@ exports.changePwd = (req, res) => {
     }
 }
 
-//Suppression d'un compte
+// Suppression d'un compte //
 exports.deleteProfile = (req, res) => {
-    //récupération de l'id de l'user
+    // Récupération de l'id de l'user //
     let userId = utils.getUserId(req.headers.authorization);
     if (userId != null) {
-        //Recherche sécurité si user existe bien
+        // Recherche sécurité si user existe bien //
         models.User.findOne({
             where: { id: userId }
         })
             .then(user => {
                 if (user != null) {
-                    //Delete de tous les posts de l'user même s'il y en a pas
-                    models.Message
+                    // Delete de tous les posts de l'user même s'il y en a pas //
+                    models.Post
                         .destroy({
                             where: { userId: user.id }
                         })
                         .then(() => {
                             console.log('Tous les posts de cet user ont été supprimé');
-                            //Suppression de l'utilisateur
+                            // Suppression de l'utilisateur //
                             models.User
                                 .destroy({
                                     where: { id: user.id }
