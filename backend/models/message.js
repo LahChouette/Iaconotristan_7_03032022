@@ -1,37 +1,30 @@
-/************************************/
-/*** Import des modules nécessaires */
-const { DataTypes } = require('sequelize')
-const DB = require('../db.config')
-
-/*******************************/
-/*** Définition du modèle Message */
-
-const Message = DB.define('Message', {
-    id: {
-        type: DataTypes.INTEGER(10),
-        primaryKey: true,
-        autoIncrement: true
-    },
-    userId: {
-        type: DataTypes.INTEGER(10),
-        allowNull: false,
-        references: {
-            model: 'User',
-            key: 'id'
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Message extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+      models.Message.belongsTo(models.User, {
+        foreignKey: {
+          allowNull: false
         }
-    },
-    content: {
-        type: DataTypes.TEXT,
-        defaultValue: '',
-        allowNull: false,
-    },
-
-    attachement: {
-        type: DataTypes.TEXT,
-        defaultValue: '',
-        allowNull: true,
-      },
-})
-
-/*******************************/
-module.exports = Message
+      })
+    }
+  }
+  Message.init({
+    idUSERS: DataTypes.INTEGER,
+    content: DataTypes.STRING,
+    attachment: DataTypes.STRING
+  }, {
+    sequelize,
+    modelName: 'Message',
+  });
+  return Message;
+};

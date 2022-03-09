@@ -1,40 +1,47 @@
-/************************************/
-/*** Import des modules nécessaires */
-const express = require('express')
-const cors = require('cors')
-//const checkTokenMiddleware = require('./jsonwebtoken/check')
+const http = require('http');
+const app = require('./app');
 
-/************************************/
-/*** Import de la connexion à la DB */
-let DB = require('./db.config')
+const normalizePort = val => {
+  const port = parseInt(val, 10);
 
-/*****************************/
-/*** Initialisation de l'API */
-const app = express()
+  if (isNaN(port)) {
+    return val;
+  }
+  if (port >= 0) {
+    return port;
+  }
+  return false;
+};
+const port = normalizePort(process.env.SERVER_PORT || '3000');
+app.set('port', port);
 
-app.use(cors())
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+const errorHandler = error => {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+  const address = server.address();
+  const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + port;
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges.');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use.');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+};
 
-/***********************************/
-/*** Import des modules de routage */
+const server = http.createServer(app);
 
+server.on('error', errorHandler);
+server.on('listening', () => {
+  const address = server.address();
+  const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
+  console.log('Listening on ' + bind);
+});
 
-/******************************/
-/*** Mise en place du routage */
-app.get('/', (req, res) => res.send(`je suis en ligne ! c'est OK`))
-
-
-
-app.get('*', (req, res) => res.status(501).send('hein !?!'))
-
-/********************************/
-/*** Start serveur avec test DB */
-DB.authenticate()
-    .then(() => console.log('Database connection OK'))
-    .then(() => {
-        app.listen(process.env.SERVER_PORT, () => {
-            console.log(`Le serveur en ligne sur le port: ${process.env.SERVER_PORT}.`)
-        })
-    })
-    .catch(err => console.log('Database Error', err))
+server.listen(port);
