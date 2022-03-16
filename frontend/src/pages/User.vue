@@ -2,11 +2,30 @@
   <div class="card">
     <i class="fa-regular fa-circle-user"></i>
     <h1 class="card__title">{{ user.username }}</h1>
-    <p class="card__info">Email : {{ user.email }}</p>
+    <p class="card__info">Email: {{ user.email }}</p>
     <div class="form-row">
-      <button class="button">Changer le mot de passe</button>
-      <button class="button-del" @click="deleteAccount">Supprimer le compte</button>
-      <button class="button" @click="logout">Déconnexion</button>
+      <p class="card__info">Changer de mot de passse:</p>
+      <input
+        class="form-row__input"
+        type="password"
+        placeholder="Nouveau mot de passe"
+        v-model="newPassword"
+      />
+      <input
+        class="form-row__input"
+        type="password"
+        placeholder="Répéter le nouveau mot de passe"
+        v-model="RepeatNewPassword"
+      />
+      <button class="button" @click="changePassword">
+        Changer le mot de passe
+      </button>
+    </div>
+    <div class="form-row">
+      <button class="button-dec" @click="logout">Déconnexion</button>
+      <button class="button-del" @click="deleteAccount">
+        Supprimer le compte
+      </button>
     </div>
   </div>
 </template>
@@ -18,6 +37,9 @@ export default {
   data() {
     return {
       user: "",
+      newPassword: null,
+      RepeatNewPassword: null
+      
     };
   },
 
@@ -28,7 +50,6 @@ export default {
   methods: {
     // Affiche le profil du user courant
     displayProfil() {
-      const id = localStorage.getItem("userId");
       axios
         .get("http://localhost:3000/api/user/me", {
           headers: {
@@ -61,6 +82,35 @@ export default {
         })
         .catch((error) => console.log(error));
     },
+
+    changePassword() {
+      //Controle de la saisie du nouveau password
+      //Controle de repeat et non null
+      if (
+        this.newPassword == this.RepeatNewPassword &&
+        this.newPassword != "" &&
+        this.RepeatNewPassword != ""
+      ) {
+        axios
+          .put(
+            "http://localhost:3000/api/user/update",
+            {
+              newPassword: this.newPassword
+            },
+            {
+              headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+              }
+            }
+          )
+          .then(response => {
+            console.log("pwd change", response);
+          })
+          .catch(err => {
+            console.log("admin", err);
+          });
+      }
+    },
   },
 };
 </script>
@@ -90,7 +140,6 @@ export default {
 .card__info {
   font-weight: 200;
   font-size: 18px;
-  white-space: nowrap;
 }
 .button {
   background: #2196f3;
@@ -102,6 +151,23 @@ export default {
   width: 100%;
   padding: 16px;
   transition: 0.4s background-color;
+}
+
+.button-dec {
+  background: #2196f3;
+  color: white;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 15px;
+  border: none;
+  width: 100%;
+  padding: 16px;
+  transition: 0.4s background-color;
+}
+
+.button-dec:hover {
+  cursor: pointer;
+  background: #1976d2;
 }
 
 .button:hover {
@@ -130,6 +196,20 @@ export default {
   margin: 16px 0px;
   gap: 16px;
   flex-wrap: wrap;
+}
+.form-row__input {
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  background: #f2f2f2;
+  font-weight: 500;
+  font-size: 16px;
+  flex: 1;
+  min-width: 100px;
+  color: black;
+}
+.form-row__input::placeholder {
+  color: #aaaaaa;
 }
 </style>
 

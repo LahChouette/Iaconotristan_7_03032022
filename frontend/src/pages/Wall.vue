@@ -23,6 +23,7 @@ export default {
 
 .fa-solid {
   font-size: 40px;
+  color: black;
 }
 
 </style>
