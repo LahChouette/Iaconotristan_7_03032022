@@ -4,7 +4,7 @@
     <p class="card__subtitle">
       Tu as déjà un compte ?
       <span class="card__action"
-        ><router-link to="/">Se connecter</router-link></span
+        ><router-link to="/login">Se connecter</router-link></span
       >
     </p>
     <div class="form-row">

@@ -4,8 +4,6 @@
 </template>
 
 <script>
-
-
 export default {
   name: 'App',
 
@@ -13,7 +11,10 @@ export default {
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;800&display=swap');
+
 #app {
+  font-family: 'Poppins', sans-serif;
   max-width: 100%;
   margin:0;
   padding: 0;
@@ -25,7 +26,7 @@ img {
 }
 
 body {
-  background: #f3802e;
+  background: #38618c;
   display: flex;
   align-items: center;
   justify-content: center;

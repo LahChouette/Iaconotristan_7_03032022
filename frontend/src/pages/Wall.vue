@@ -1,6 +1,7 @@
 <template>
   <div class="main">
     <h1>le muuur :D</h1>
+    <span class="card__action"><router-link to="/user/me"><i class="fa-solid fa-user-gear"></i></router-link></span>
   </div>
 </template>
 
@@ -18,6 +19,10 @@ export default {
   border-radius: 16px;
   padding:32px;
   margin-top: 60px;
+}
+
+.fa-solid {
+  font-size: 40px;
 }
 
 </style>
