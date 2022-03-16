@@ -1,5 +1,5 @@
 <template>
-  <img alt="Groupomania logo" src="./assets/icon-left-font-monochrome-black.png">
+  <img alt="Groupomania logo" src="./assets/inconlogo.png">
   <router-view></router-view>
 </template>
 
