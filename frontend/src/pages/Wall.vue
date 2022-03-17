@@ -12,7 +12,13 @@
           <form class="form-block">
             <div class="input-group input-group-1">
               <i class="fa-regular fa-circle-user"></i>
-              <input class="input-text" id="input_text" type="text" v-model="content" placeholder="Racontez nous une incroyable histoire"/>
+              <input
+                class="input-text"
+                id="input_text"
+                type="text"
+                v-model="content"
+                placeholder="Racontez nous une incroyable histoire"
+              />
             </div>
             <div class="input-group">
               <div class="custom-file">
@@ -25,7 +31,12 @@
                 />
               </div>
             </div>
-            <input type="submit" class="button-env" value="Submit"  @click.prevent="createPost"/>
+            <input
+              type="submit"
+              class="button-env"
+              value="Submit"
+              @click.prevent="createPost"
+            />
           </form>
         </div>
       </div>
@@ -33,7 +44,7 @@
     <div class="mur">
       <h3 class="mur__titre">Publications récents</h3>
     </div>
-    <Post/>
+    <Post />
   </div>
 </template>
 
@@ -43,9 +54,9 @@ import Post from "../components/Post";
 export default {
   name: "Mur",
   components: {
-    Post
+    Post,
   },
-   data() {
+  data() {
     return {
       content: null,
       postImage: null,
@@ -59,29 +70,29 @@ export default {
       console.log("test récup", fd.get("inputFile"));
       console.log("test récup", fd.get("content"));
       if (fd.get("inputFile") == "null" && fd.get("content") == "null") {
-          alert('rien a publier');
+        alert("rien a publier");
       } else {
         axios
           .post("http://localhost:3000/api/post/create", fd, {
             headers: {
-              Authorization: "Bearer " + window.localStorage.getItem("token")
-            }
+              Authorization: "Bearer " + window.localStorage.getItem("token"),
+            },
           })
-          .then(response => {
+          .then((response) => {
             //Si retour positif de l'API reload de la page pour affichage du dernier post
             if (response) {
-              this.$router.push({ path: "/wall" });
+              location.reload();
             }
           })
-          .catch(error => (error));
+          .catch((error) => error);
       }
     },
     onFileChange(e) {
       console.log(e);
       this.postImage = e.target.files[0] || e.dataTransfer.files;
       console.log(this.postImage);
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -150,7 +161,7 @@ export default {
 }
 
 .mur__titre {
-  color:#38618c;
+  color: #38618c;
 }
 
 .input-text {

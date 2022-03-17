@@ -56,7 +56,9 @@ export default {
             localStorage.setItem("isAdmin", response.data.isAdmin);
             this.$router.push("/wall");
           })
-          .catch((error) => console.log(error));
+          .catch(() => {
+            alert(" mauvais Username ou Password ! ");
+          });
       } else {
         alert("oops ! Un problème est survenue avec vos saisies");
       }
