@@ -83,7 +83,7 @@ export default {
   font-weight: 500;
 }
 .button {
-  background: #2196f3;
+  background: #38618c;
   color: white;
   border-radius: 8px;
   font-weight: 800;

@@ -1,9 +1,10 @@
 <template>
   <div class="card">
+    <span class="card__action"><router-link to="/wall"><i class="fa-solid fa-arrow-left"></i></router-link></span>
     <i class="fa-regular fa-circle-user"></i>
     <h1 class="card__title">{{ user.username }}</h1>
-    <p class="card__info">Email: {{ user.email }}</p>
-    <div class="form-row">
+    <p class="card__info-email">Email: {{ user.email }}</p>
+    <div class="form-row-mdp">
       <p class="card__info">Changer de mot de passse:</p>
       <input
         class="form-row__input"
@@ -38,8 +39,7 @@ export default {
     return {
       user: "",
       newPassword: null,
-      RepeatNewPassword: null
-      
+      RepeatNewPassword: null,
     };
   },
 
@@ -79,6 +79,7 @@ export default {
         .then(() => {
           localStorage.clear();
           this.$router.push({ path: "/signup" });
+          alert("Compte supprimé !");
         })
         .catch((error) => console.log(error));
     },
@@ -95,19 +96,23 @@ export default {
           .put(
             "http://localhost:3000/api/user/update",
             {
-              newPassword: this.newPassword
+              newPassword: this.newPassword,
             },
             {
               headers: {
-                Authorization: "Bearer " + localStorage.getItem("token")
-              }
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
             }
           )
-          .then(response => {
+          .then((response) => {
             console.log("pwd change", response);
+            localStorage.clear();
+            this.$router.push({ path: "/login" });
+            alert("Changement de mot de passe réussi ! Veuillez vous reconnecter.");
           })
-          .catch(err => {
+          .catch((err) => {
             console.log("admin", err);
+            alert("oops ! 8 caractères dont au minimum une majuscule, une minuscule, un caractère numérique, un caractère spécial et différent de l'ancien mot de passe");
           });
       }
     },
@@ -130,6 +135,12 @@ export default {
   justify-content: center;
   align-items: center;
   display: flex;
+  color:#38618c;
+}
+
+.fa-solid {
+  font-size: 30px;
+  color: #38618c;
 }
 
 .card__title {
@@ -141,8 +152,15 @@ export default {
   font-weight: 200;
   font-size: 18px;
 }
+
+.card__info-email {
+  font-weight: 200;
+  font-size: 18px;
+  margin-top: 45px;
+}
+
 .button {
-  background: #2196f3;
+  background: #38618c;
   color: white;
   border-radius: 8px;
   font-weight: 800;
@@ -154,7 +172,7 @@ export default {
 }
 
 .button-dec {
-  background: #2196f3;
+  background: #38618c;
   color: white;
   border-radius: 8px;
   font-weight: 800;
@@ -163,6 +181,7 @@ export default {
   width: 100%;
   padding: 16px;
   transition: 0.4s background-color;
+  margin-top: 40px;
 }
 
 .button-dec:hover {
@@ -176,7 +195,7 @@ export default {
 }
 
 .button-del {
-  background: #2196f3;
+  background: #38618c;
   color: white;
   border-radius: 8px;
   font-weight: 800;
@@ -196,6 +215,14 @@ export default {
   margin: 16px 0px;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+.form-row-mdp {
+  display: flex;
+  margin: 16px 0px;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 50px;
 }
 .form-row__input {
   padding: 8px;
