@@ -1,6 +1,9 @@
 <template>
   <div class="card">
-    <span class="card__action"><router-link to="/wall"><i class="fa-solid fa-arrow-left"></i></router-link></span>
+    <span class="card__action"
+      ><router-link to="/wall"
+        ><i class="fa-solid fa-arrow-left"></i></router-link
+    ></span>
     <i class="fa-regular fa-circle-user"></i>
     <h1 class="card__title">{{ user.username }}</h1>
     <p class="card__info-email">Email: {{ user.email }}</p>
@@ -32,7 +35,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import Axios from "@/_services/axios.service";
+
 export default {
   name: "User",
   data() {
@@ -50,12 +54,7 @@ export default {
   methods: {
     // Affiche le profil du user courant
     displayProfil() {
-      axios
-        .get("http://localhost:3000/api/user/me", {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-        })
+      Axios.get("/user/me", {})
         .then((response) => {
           this.user = response.data;
         })
@@ -65,19 +64,20 @@ export default {
     },
 
     logout() {
-      localStorage.clear();
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("username");
+      localStorage.removeItem("isAdmin");
       this.$router.push({ path: "/login" });
     },
 
     deleteAccount() {
-      axios
-        .delete("http://localhost:3000/api/user/delete", {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-        })
+      Axios.delete("user/delete", {})
         .then(() => {
-          localStorage.clear();
+          localStorage.removeItem("token");
+          localStorage.removeItem("userId");
+          localStorage.removeItem("username");
+          localStorage.removeItem("isAdmin");
           this.$router.push({ path: "/signup" });
           alert("Compte supprimé !");
         })
@@ -92,27 +92,25 @@ export default {
         this.newPassword != "" &&
         this.RepeatNewPassword != ""
       ) {
-        axios
-          .put(
-            "http://localhost:3000/api/user/update",
-            {
-              newPassword: this.newPassword,
-            },
-            {
-              headers: {
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              },
-            }
-          )
+        Axios.put("user/update", {
+          newPassword: this.newPassword,
+        })
           .then((response) => {
             console.log("pwd change", response);
-            localStorage.clear();
+            localStorage.removeItem("token");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("username");
+            localStorage.removeItem("isAdmin");
             this.$router.push({ path: "/login" });
-            alert("Changement de mot de passe réussi ! Veuillez vous reconnecter.");
+            alert(
+              "Changement de mot de passe réussi ! Veuillez vous reconnecter."
+            );
           })
           .catch((err) => {
             console.log("admin", err);
-            alert("oops ! 8 caractères dont au minimum une majuscule, une minuscule, un caractère numérique, un caractère spécial et différent de l'ancien mot de passe");
+            alert(
+              "oops ! 8 caractères dont au minimum une majuscule, une minuscule, un caractère numérique, un caractère spécial et différent de l'ancien mot de passe"
+            );
           });
       }
     },
@@ -135,7 +133,7 @@ export default {
   justify-content: center;
   align-items: center;
   display: flex;
-  color:#38618c;
+  color: #38618c;
 }
 
 .fa-solid {

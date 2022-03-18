@@ -14,14 +14,15 @@ module.exports = (req, res, next) => {
         const token = authHeader.split(' ')[1];
 
         jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+            console.log('dans le verify')
             if (err) {
-                return res.status(403);
+                return res.status(401).json({message: 'Session expirée'});
             }
             next();
         });
     }
     // Sinon, on renvoie le statut 401 Unauthorized //
     else {
-        res.status(401).json({error:"accès non authorisé"});
+        res.status(403).json({error:"accès non authorisé"});
     }
 };

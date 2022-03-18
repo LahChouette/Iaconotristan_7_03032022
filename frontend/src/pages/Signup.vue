@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import Axios from '@/_services/axios.service'
 
 export default {
   name: "Signup",
@@ -67,8 +67,8 @@ export default {
         regexEmail.test(this.email) &&
         usernameRegex.test(this.username)
       ) {
-        axios
-          .post("http://localhost:3000/api/user/signup", {
+        Axios
+          .post("user/signup", {
             username: this.username,
             email: this.email,
             password: this.password,

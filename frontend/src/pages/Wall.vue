@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import Axios from "@/_services/axios.service";
 import Post from "../components/Post";
 export default {
   name: "Mur",
@@ -59,25 +59,20 @@ export default {
   data() {
     return {
       content: null,
-      postImage: null,
+      attachement: null,
     };
   },
   methods: {
     createPost() {
       const fd = new FormData();
-      fd.append("inputFile", this.postImage);
+      fd.append("inputFile", this.attachement);
       fd.append("content", this.content);
       console.log("test récup", fd.get("inputFile"));
       console.log("test récup", fd.get("content"));
       if (fd.get("inputFile") == "null" && fd.get("content") == "null") {
         alert("rien a publier");
       } else {
-        axios
-          .post("http://localhost:3000/api/post/create", fd, {
-            headers: {
-              Authorization: "Bearer " + window.localStorage.getItem("token"),
-            },
-          })
+        Axios.post("post/create", fd, {})
           .then((response) => {
             //Si retour positif de l'API reload de la page pour affichage du dernier post
             if (response) {
@@ -89,8 +84,8 @@ export default {
     },
     onFileChange(e) {
       console.log(e);
-      this.postImage = e.target.files[0] || e.dataTransfer.files;
-      console.log(this.postImage);
+      this.attachement = e.target.files[0] || e.dataTransfer.files;
+      console.log(this.attachement);
     },
   },
 };

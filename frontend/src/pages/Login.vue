@@ -30,8 +30,8 @@
 </template>
 
 <script>
-import axios from "axios";
-
+//import axios from "axios";
+import Axios from '@/_services/axios.service'
 export default {
   name: "Signup",
   data() {
@@ -44,8 +44,8 @@ export default {
     // Création d'un nouvel user dans la base
     logIn() {
       if (this.username !== null || this.password !== null) {
-        axios
-          .post("http://localhost:3000/api/user/login", {
+        Axios
+          .post("/user/login", {
             username: this.username,
             password: this.password,
           })

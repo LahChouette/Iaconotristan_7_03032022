@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div>{{ error }}</div>
     <div v-for="post in allPosts" :key="post.id">
       <div class="block-post">
         <div class="form-block">
@@ -7,11 +8,18 @@
             <div class="username">
               <span class="username2">
                 <i class="fa-regular fa-circle-user"></i>
-                <p>{{ post.User.username }}</p>
+                <p class="nom">{{ post.User.username }}</p>
               </span>
-              <i class="fa-solid fa-trash-can" @click="deleteMessage"></i>
+              <i
+                class="fa-solid fa-trash-can"
+                v-if="userId == post.UserId || isAdmin == 'true'"
+                v-on:click="deleteMsg(post.id)"
+              ></i>
             </div>
             <h5>{{ post.content }}</h5>
+            <div v-show="post.attachement" class="imageDiv">
+              <img class="retoucheImg" :src="post.attachement" alt="Image" />
+            </div>
             <span class="date"
               ><i>{{ post.createdAt }}</i></span
             >
@@ -23,8 +31,8 @@
 </template>
 
 <script>
-import axios from "axios";
-
+//import axios from "axios";
+import Axios from "@/_services/axios.service";
 export default {
   name: "Post",
   data() {
@@ -34,6 +42,7 @@ export default {
       isAdmin: localStorage.getItem("isAdmin"),
       allPosts: [],
       post: "",
+      error: "",
     };
   },
   created() {
@@ -42,18 +51,23 @@ export default {
   methods: {
     // Permet d'afficher tous les messages
     displayMsg() {
-      axios
-        .get("http://localhost:3000/api/post", {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-        })
+      Axios.get("/post")
         .then((response) => {
           this.allPosts = response.data;
         })
         .catch(() => {
-          alert("probléme afficher les message");
+          //alert("probléme afficher les message");
+          this.error = "Problème avec les messages";
         });
+    },
+    // Supprime un message
+    deleteMsg(pid) {
+      Axios.delete("/post/delete/" + pid)
+        .then(() => {
+          alert("Message Supprimé");
+          location.reload();
+        })
+        .catch(() => {});
     },
   },
 };
@@ -98,5 +112,21 @@ export default {
 
 .fa-solid {
   color: #38618c;
+}
+
+.nom {
+  font-size: 18px;
+  color: #38618c;
+  font-weight: 600;
+}
+
+.retoucheImg {
+  max-width: 50%;
+}
+
+.imageDiv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
