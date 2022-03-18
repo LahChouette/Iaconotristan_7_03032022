@@ -74,7 +74,7 @@ export default {
       } else {
         Axios.post("post/create", fd, {})
           .then((response) => {
-            //Si retour positif de l'API reload de la page pour affichage du dernier post
+
             if (response) {
               location.reload();
             }

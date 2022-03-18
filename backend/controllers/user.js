@@ -9,9 +9,9 @@ let verifInput = require('../utils/verifInput')
 /**********************************/
 /*** Routage de la ressource User */
 
-// Création d'un user //
+// Création d'un utilisateur //
 exports.signup = (req, res) => {
-    // Valider les paramètres de la requète //
+    // Valider les paramètres de la requête //
     let email = req.body.email;
     let username = req.body.username;
     let password = req.body.password;
@@ -20,7 +20,7 @@ exports.signup = (req, res) => {
         res.status(400).json({ error: 'il manque un paramètre' })
     }
 
-    // TO DO => Vérification des saisies user //
+    // Vérification des saisi de l'utilisateur //
     let emailOk = verifInput.validEmail(email);
     console.log(emailOk)
     let mdpOK = verifInput.validPassword(password);
@@ -28,8 +28,8 @@ exports.signup = (req, res) => {
     let usernameOk = verifInput.validUsername(username);
     console.log(usernameOk)
     if (emailOk == true && mdpOK == true && usernameOk == true) {
-        // Vérification si user n'existe pas déjà //
-        // TO DO => Vérifier l'username et l'email //
+        // Vérification si l'utilisateur n'existe pas déjà //
+        // Vérifier l'username et l'email //
         models.User.findOne({
             attributes: ['email'],
             where: { email: email }
@@ -37,7 +37,7 @@ exports.signup = (req, res) => {
             .then(user => {
                 if (!user) {
                     bcrypt.hash(password, 10, function (err, bcryptPassword) {
-                        // Création de l'user //
+                        // Création de l'utilisateur //
                         const newUser = models.User.create({
                             email: email,
                             username: username,
@@ -60,7 +60,7 @@ exports.signup = (req, res) => {
     }
 };
 
-// Login d'un user //
+// Login d'un utilisateur //
 exports.login = (req, res) => {
     // Récupération et validation des paramètres //
     let username = req.body.username;
@@ -68,7 +68,7 @@ exports.login = (req, res) => {
     if (username == null || password == null) {
         res.status(400).json({ error: 'Il manque un paramètre' })
     }
-    // Vérification si user existe //
+    // Vérification si l'utilisateur existe //
     models.User.findOne({
         where: { username: username }
     })
@@ -92,7 +92,7 @@ exports.login = (req, res) => {
         .catch(err => { res.status(500).json({ err }) })
 };
 
-// Profil d'un user //
+// Profil d'un utilisateur //
 exports.userProfil = (req, res) => {
     let id = utils.getUserId(req.headers.authorization)
     models.User.findOne({
@@ -103,10 +103,9 @@ exports.userProfil = (req, res) => {
         .catch(error => res.status(500).json(error))
 };
 
-// Modification d'un profil //
+// Modification d'un profil utilisateur //
 exports.changePwd = (req, res) => {
-    // TO DO:
-    // Récupère l'id de l'user et le nouveau password //
+    // Récupère l'id de l'utilisateur et le nouveau password //
     let userId = utils.getUserId(req.headers.authorization);
     const newPassword = req.body.newPassword;
     console.log(newPassword)
@@ -141,18 +140,18 @@ exports.changePwd = (req, res) => {
     }
 }
 
-// Suppression d'un compte //
+// Suppression d'un compte utilisateur //
 exports.deleteProfile = (req, res) => {
-    // Récupération de l'id de l'user //
+    // Récupération de l'id de l'utilisateur //
     let userId = utils.getUserId(req.headers.authorization);
     if (userId != null) {
-        // Recherche sécurité si user existe bien //
+        // Recherche sécurité si utilisateur existe bien //
         models.User.findOne({
             where: { id: userId }
         })
             .then(user => {
                 if (user != null) {
-                    // Delete de tous les posts de l'user même s'il y en a pas //
+                    // Delete de tous les posts de l'utilisateur //
                     models.Post
                         .destroy({
                             where: { userId: user.id }

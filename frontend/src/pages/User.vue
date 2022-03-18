@@ -52,14 +52,13 @@ export default {
   },
 
   methods: {
-    // Affiche le profil du user courant
+
     displayProfil() {
       Axios.get("/user/me", {})
         .then((response) => {
           this.user = response.data;
         })
         .catch(() => {
-          //window.location.reload();
         });
     },
 
@@ -85,8 +84,6 @@ export default {
     },
 
     changePassword() {
-      //Controle de la saisie du nouveau password
-      //Controle de repeat et non null
       if (
         this.newPassword == this.RepeatNewPassword &&
         this.newPassword != "" &&

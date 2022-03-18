@@ -52,7 +52,6 @@ export default {
     };
   },
   methods: {
-    // Création d'un nouvel user dans la base
     sendSignup() {
       const regexPassword = /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})/;
       const regexEmail =
@@ -76,7 +75,10 @@ export default {
           .then(() => {
             this.$router.push({ path: "/login" });
           })
-          .catch((err) => console.log(err));
+          .catch((err) => {
+            console.log(err);
+            alert("oops ! Un problème est survenue avec vos saisies");
+          });
       } else {
         alert("oops ! Un problème est survenue avec vos saisies");
       }

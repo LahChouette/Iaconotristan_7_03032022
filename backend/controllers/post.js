@@ -8,11 +8,11 @@ const { getUserId } = require('../utils/jwtUtils');
 /**************************************/
 /*** Routage de la ressource Post */
 
-// Création d'un message // 
+// Création d'un post // 
 exports.create = (req, res) => {
     // Declaration de l'url de l'image //
     let attachmentURL
-    // Identifier qui créé le message //
+    // Identifier qui créé le post //
     let id = utils.getUserId(req.headers.authorization)
     models.User.findOne({
         attributes: ['id', 'email', 'username'],
@@ -69,47 +69,15 @@ exports.listMsg = (req, res) => {
         .catch(err => res.status(500).json(err))
 }
 
-// Suppression d'un post //
+// Supprimé un post //
 exports.delete = (req, res) => {
     // ID du post + vérification
     let postId = parseInt(req.params.id)
-    if(!postId){
-        return res.status(400).json({ error: 'Paramètre manquant'})
+    if (!postId) {
+        return res.status(400).json({ error: 'Paramètre manquant' })
     }
-    models.Post.destroy({ where: { id: req.params.id }})
-    .then(() => res.status(200).json({ message: "Message supprimé !" }))
-    .catch(error => res.status(400).json({ error }))
+    models.Post.destroy({ where: { id: req.params.id } })
+        .then(() => res.status(200).json({ message: "Message supprimé !" }))
+        .catch(error => res.status(400).json({ error }))
 };
 
-// Modification d'un post //
-exports.update = (req, res) => {
-    // récupération de l'id du demandeur pour vérification //
-    let userOrder = req.body.userIdOrder;
-    // Identification du demandeur //
-    let id = utils.getUserId(req.headers.authorization);
-    models.User.findOne({
-        attributes: ['id', 'email', 'username', 'isAdmin'],
-        where: { id: id }
-    })
-        .then(user => {
-            // Vérification que le demandeur est soit l'admin soit le poster //
-            if (user && (user.isAdmin == true || user.id == userOrder)) {
-                console.log('Modif ok pour le post :', req.body.postId);
-                models.Post
-                    .update(
-                        {
-                            content: req.body.newText,
-                            attachement: req.body.newImg
-                        },
-                        { where: { id: req.body.postId } }
-                    )
-                    .then(() => res.end())
-                    .catch(err => res.status(500).json(err))
-            }
-            else {
-                res.status(401).json({ error: 'Utilisateur non autorisé à modifier ce post' })
-            }
-        }
-        )
-        .catch(error => res.status(500).json(error));
-}

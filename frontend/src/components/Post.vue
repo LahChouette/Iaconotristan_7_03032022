@@ -16,7 +16,7 @@
                 v-on:click="deleteMsg(post.id)"
               ></i>
             </div>
-            <h5>{{ post.content }}</h5>
+            <h5 v-if="post.content !== 'null'">{{ post.content }}</h5>
             <div v-show="post.attachement" class="imageDiv">
               <img class="retoucheImg" :src="post.attachement" alt="Image" />
             </div>
@@ -49,18 +49,17 @@ export default {
     this.displayMsg();
   },
   methods: {
-    // Permet d'afficher tous les messages
+
     displayMsg() {
       Axios.get("/post")
         .then((response) => {
           this.allPosts = response.data;
         })
         .catch(() => {
-          //alert("probléme afficher les message");
           this.error = "Problème avec les messages";
         });
     },
-    // Supprime un message
+
     deleteMsg(pid) {
       Axios.delete("/post/delete/" + pid)
         .then(() => {
