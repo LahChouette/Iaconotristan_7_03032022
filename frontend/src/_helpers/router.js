@@ -10,7 +10,7 @@ const routes = [
     { path: '/login', component: Login},
     { path: '/signup', component: Signup},
     { path: '/wall', component: Wall, beforeEnter: authGuard},
-    { path: '/user/me', component: User},
+    { path: '/user/me', component: User, beforeEnter: authGuard},
 
     {path: '/:pathMatch(.*)*', redirect: '/login'}
 

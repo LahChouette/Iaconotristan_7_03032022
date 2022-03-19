@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import Axios from '@/_services/axios.service'
+import Axios from "@/_services/axios.service";
 
 export default {
   name: "Signup",
@@ -66,21 +66,20 @@ export default {
         regexEmail.test(this.email) &&
         usernameRegex.test(this.username)
       ) {
-        Axios
-          .post("user/signup", {
-            username: this.username,
-            email: this.email,
-            password: this.password,
-          })
+        Axios.post("user/signup", {
+          username: this.username,
+          email: this.email,
+          password: this.password,
+        })
           .then(() => {
             this.$router.push({ path: "/login" });
           })
           .catch((err) => {
             console.log(err);
-            alert("oops ! Un problème est survenue avec vos saisies");
+            alert("oops ! 8 caractères dont au minimum une majuscule, une minuscule, un caractère numérique, un caractère spécial spécial pour le mot de passe");
           });
       } else {
-        alert("oops ! Un problème est survenue avec vos saisies");
+        alert("oops ! 8 caractères dont au minimum une majuscule, une minuscule, un caractère numérique, un caractère spécial pour le mot de passe ou email déja utilisé");
       }
     },
   },
