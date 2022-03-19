@@ -12,8 +12,8 @@
               </span>
               <i
                 class="fa-solid fa-trash-can"
-                v-if="userId == post.UserId || isAdmin == 'true'"
-                v-on:click="deleteMsg(post.id)"
+                v-if="post.UserId == userId || isAdmin == true"
+                @click="deleteMsg(post.id)"
               ></i>
             </div>
             <h5 v-if="post.content !== 'null'">{{ post.content }}</h5>
@@ -49,7 +49,6 @@ export default {
     this.displayMsg();
   },
   methods: {
-
     displayMsg() {
       Axios.get("/post")
         .then((response) => {
@@ -61,7 +60,12 @@ export default {
     },
 
     deleteMsg(pid) {
-      Axios.delete("/post/delete/" + pid)
+      Axios.delete("/post/delete/" + pid, {
+            data: {
+            postId: this.post.id,
+            userIdOrder: this.userId,
+          }
+      })  
         .then(() => {
           alert("Message Supprimé");
           location.reload();

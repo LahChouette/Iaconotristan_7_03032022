@@ -76,8 +76,47 @@ exports.delete = (req, res) => {
     if (!postId) {
         return res.status(400).json({ error: 'Paramètre manquant' })
     }
-    models.Post.destroy({ where: { id: req.params.id } })
-        .then(() => res.status(200).json({ message: "Message supprimé !" }))
-        .catch(error => res.status(400).json({ error }))
-};
+    // req => userId, postId, user.isAdmin //
+    let userOrder = req.body.userIdOrder;
+    // identification du demandeur //
+    let id = utils.getUserId(req.headers.authorization)
+    models.User.findOne({
+        attributes: ['id', 'email', 'username', 'isAdmin'],
+        where: { id: id }
+    })
+        .then(user => {
+            // Vérification que le demandeur est soit l'admin soit le poster //
+            if (user && (user.isAdmin == true || user.id == userOrder)) {
+                console.log('Suppression du post id :', userOrder);
+                models.Post
+                    .findOne({
+                        where: { id: postId }
+                    })
+                    .then((postFind) => {
 
+                        if (postFind.attachement) {
+                            const filename = postFind.attachement.split('/images/')[1];
+                            console.log("teseeeest", filename);
+                            fs.unlink(`images/${filename}`, () => {
+                                models.Post
+                                    .destroy({
+                                        where: { id: postFind.id }
+                                    })
+                                    .then(() => res.end())
+                                    .catch(err => res.status(500).json(err))
+                            })
+                        }
+                        else {
+                            models.Post
+                                .destroy({
+                                    where: { id: postFind.id }
+                                })
+                                .then(() => res.end())
+                                .catch(err => res.status(500).json(err))
+                        }
+                    })
+                    .catch(err => res.status(500).json(err))
+            } else { res.status(403).json('Utilisateur non autorisé à supprimer ce post') }
+        })
+        .catch(error => res.status(500).json(error));
+};
