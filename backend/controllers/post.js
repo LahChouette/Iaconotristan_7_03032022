@@ -71,7 +71,7 @@ exports.listMsg = (req, res) => {
 
 // Supprimé un post //
 exports.delete = (req, res) => {
-    // ID du post + vérification
+    // ID du post + vérification //
     let postId = parseInt(req.params.id)
     if (!postId) {
         return res.status(400).json({ error: 'Paramètre manquant' })
