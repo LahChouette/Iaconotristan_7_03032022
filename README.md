@@ -19,7 +19,7 @@ sequelize db:create && sequelize db:migrate
 - Pour démarrer l'API exécuter la commande suivante :
 
 ```sh
-npm run start
+npm run start ou npm run dev
 ```
 
 # Outils et languages pour la réalisation du projet
